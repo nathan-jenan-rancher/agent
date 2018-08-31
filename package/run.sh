@@ -77,7 +77,7 @@ if [ -n "$CATTLE_CA_CHECKSUM" ]; then
     temp=$(mktemp)
     curl --insecure -s -fL $CATTLE_SERVER/v3/settings/cacerts | jq -r .value > $temp
     cat $temp
-    if [ "$(sha256sum $temp | awk '{print $1}')" != $CATTLE_CA_CHECKSUM ]; then
+    if [ "$(sha256sum $temp | awk '{print $1}')" != $CATTLE_CA_CHECKSUM ] || [ "$(tuncate -s -1 $temp | sha256sum | awk '{print $1}')" != $CATTLE_CA_CHECKSUM ]; then
         rm -f $temp
         error $CATTLE_SERVER/v3/settings/cacerts does not match $CATTLE_CA_CHECKSUM
         exit 1
